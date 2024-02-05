@@ -1,15 +1,15 @@
 from audio_recorder import AudioRecorder
 from audio_recorder import MicConfig
-#from led_display import LedDisplay
+from led_display import LedDisplay
 from noise_detector import NoiseDetector
-
+import time
 
 if __name__ == '__main__':
     try:
-        #pixels = LedDisplay()
-        noiser = NoiseDetector()
+        pixels = LedDisplay()
+        noiser = NoiseDetector(thres_dB=10)
         # Use PC
-        recorder = AudioRecorder()
+        recorder = AudioRecorder("RESPEAKER")
         recorder.start_recording()
         recorder.initPlot()
 
@@ -22,13 +22,12 @@ if __name__ == '__main__':
             #recorder.plot_spectrogram()
             f, sx = recorder.get_spectrogram()
             # Test noise detection
-            if noiser.detect_noise(f, sx) == "noise detected":
-                print("noise detected")
-            # Test the LED display
+            pixels.fader(noiser.detect_noise(f, sx))
+            time.sleep(1)
 
 
     except KeyboardInterrupt:
         # Stop LEDs when Ctrl+C is pressed
         recorder.clear_cache()
         recorder.stop_recording()
-        #pixels.off()
+        pixels.off()

@@ -26,8 +26,13 @@ class LedDisplay:
         self.thread.daemon = True
         self.thread.start()
         self.last_direction = None
-        self.currentstate = 0
+        self.fill_level = 0
 
+    def show(self, data):
+        for i in range(self.PIXELS_N):
+            self.dev.set_pixel(i, int(data[4*i + 1]), int(data[4*i + 2]), int(data[4*i + 3]))
+        self.dev.show()
+        
     def off(self):
         self.put(self.pattern.off)
 
@@ -41,30 +46,40 @@ class LedDisplay:
         self.pattern.stop = True
         self.queue.put(func)
         
+        
+    def calibrate(self):
+        #maintain fader levels between 10 - 90
+        if self.fill_level>90:
+            self.fill_level=90
+        elif self.fill_level<=10:
+            self.fill_level=10
+            
+    def fadevalue(self):
+        #determine rise/lower level for led brightness
+        if self.fill_level > 75:
+            return 2
+        elif self.fill_level > 50:
+            return 3
+        elif self.fill_level > 25:
+            return 4
+        else:
+            return 5
+    
     def fader(self, val):
+
+        self.calibrate()
+        
         if val == "noise detected":
-            self.currentstate+=10
-        elif self.currentstate>10:
-            self.currentstate-=10
-        abs_val = self.currentstate%100
-        red_led = abs_val
-        green_led = 100 - abs_val
+            self.fill_level+=self.fadevalue()
+        elif val == "silence":
+            self.fill_level-=self.fadevalue()
+        
+        red_led = self.fill_level
+        green_led = 100 - self.fill_level
+        
+        #print(val)
+        #print(red_led)
+        
         for i in range(self.PIXELS_N):
-            self.dev.set_pixel(i, red_led,green_led, 0, 80)
+            self.dev.set_pixel(i, red_led,green_led, 0, 50)
         self.dev.show()
-
-    def led_lightup(self):
-        timer = threading.Timer(1, self.fader("silence"))
-        timer.start()
-
-try:
-    pixels = LedDisplay()
-
-    while True:
-        # Test the function
-        for i in range(101):
-            pixels.fader(i)
-
-except KeyboardInterrupt:
-    # Stop LEDs when Ctrl+C is pressed
-    pixels.off()

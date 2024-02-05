@@ -11,16 +11,14 @@ class MicConfig:
             self.channels=1
             self.device_index=1
             self.frames_per_buffer=1024
-            self.seconds=0.5
         elif device_name == "RESPEAKER":
             self.rate=44100
             self.channels=4
             self.device_index=5
             self.frames_per_buffer=1024
-            self.seconds=0.5
 
 class AudioRecorder:
-    def __init__(self, device_name="PC", rec_duration=2):
+    def __init__(self, device_name="PC", rec_duration=0.5):
         device = MicConfig(device_name)
         self.channels = device.channels
         self.rate = device.rate
@@ -44,8 +42,8 @@ class AudioRecorder:
                                      channels=self.channels,
                                      rate=self.rate,
                                      input=True,
-                                     frames_per_buffer=self.frames_per_buffer)
-                                     #input_device_index=self.device_index)
+                                     frames_per_buffer=self.frames_per_buffer,
+                                     input_device_index=self.device_index)
 
     def stop_recording(self):
         self.stream.stop_stream()
@@ -54,11 +52,13 @@ class AudioRecorder:
 
     def record_frame(self):
         for index in range(0, int(self.rate / (self.frames_per_buffer * self.duration))):
-            audio_sample = np.frombuffer(self.stream.read(self.frames_per_buffer),dtype=np.int16)[1::self.channels]
+            audio_sample = np.frombuffer(self.stream.read(self.frames_per_buffer, exception_on_overflow = False),dtype=np.int16)[1::self.channels]
             self.frames.extend(audio_sample.flatten().tolist())        
 
     def get_spectrogram(self):
-        return self.freq, self.Sxx
+        f, sx = self.freq, self.Sxx
+        self.clear_cache()
+        return f, sx
 
     def calculate_spectrogram(self):
         #spectrum generation
@@ -73,7 +73,6 @@ class AudioRecorder:
         plt.xlabel('Time [sec]')
         self.fig.canvas.draw()
         plt.pause(0.2)  # pause a bit so that the plot updates
-        self.clear_cache()
         return
 
     def clear_cache(self):

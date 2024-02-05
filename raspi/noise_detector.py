@@ -19,12 +19,13 @@ class NoiseDetector:
         return self.noise_history
     
     def detect_noise(self, freq, frame):
-        count_noise="silence"
         noise_level = self.calculate_noiselevel(frame)
+        #print(noise_level)
         if noise_level>self.threshold_dB:
             count_noise="noise detected"
             self.noise_history.append(1)
         else:
+            count_noise="silence"
             self.noise_history.append(0)
         return count_noise
     
