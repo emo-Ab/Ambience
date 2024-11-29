@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polling Client</title>
+</head>
+<body>
+    <h1><span id="value">Loading...</span></h1>
+    <script>
+        const url = 'http://192.168.0.180:8080';
+        let lastValue = null;
+
+        async function fetchValue() {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const newValue = await response.text();
+                if (newValue !== lastValue) {
+                    document.getElementById('value').textContent = newValue;
+                    lastValue = newValue;
+                }
+            } catch (error) {
+                console.error('Failed to fetch value:', error);
+            }
+        }
+
+        // Poll the server every 10 milliseconds
+        setInterval(fetchValue, 10);
+
+        // Initial fetch
+        fetchValue();
+    </script>
+</body>
+</html>
