@@ -3,35 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polling Client</title>
+    <title>Color Box</title>
+    <style>
+        #colorBox {
+            width: 200px;
+            height: 200px;
+            background-color: rgb(252, 252, 252);
+        }
+    </style>
 </head>
 <body>
-    <h1><span id="value">Loading...</span></h1>
+    <div id="colorBox"></div>
     <script>
-        const url = 'http://192.168.0.180:8080';
-        let lastValue = null;
-
-        async function fetchValue() {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const newValue = await response.text();
-                if (newValue !== lastValue) {
-                    document.getElementById('value').textContent = newValue;
-                    lastValue = newValue;
-                }
-            } catch (error) {
-                console.error('Failed to fetch value:', error);
-            }
+        function updateColor() {
+            fetch('http://192.168.0.31:8085/')
+                .then(response => response.text())
+                .then(data => {
+                    const [r, g, b] = data.split(',').map(Number);
+                    document.getElementById('colorBox').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+                })
+                .catch(error => console.error('Error:', error));
         }
 
-        // Poll the server every 10 milliseconds
-        setInterval(fetchValue, 10);
+        setInterval(updateColor, 5000);
 
-        // Initial fetch
-        fetchValue();
+        updateColor();
     </script>
 </body>
 </html>
