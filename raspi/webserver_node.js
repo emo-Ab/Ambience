@@ -2,9 +2,8 @@ const http = require('http');
 const url = require('url');
 const path = require('path')
 const fs = require('fs')
-const config = require('config');
 
-const hostname = config.get('webserver-address')
+const hostname = '192.168.0.31'
 let variableValue = '10,10,10';
 
 // Read the HTML file
@@ -27,7 +26,7 @@ const updateServer = http.createServer((req, res) => {
     res.end('updated');
 });
 
-updateServer.listen(config.get('update-port'), () => {
+updateServer.listen(8080, () => {
     console.log('Update server running at http://' + hostname + ':8080/');
 });
 
@@ -42,7 +41,7 @@ const retrieveServer = http.createServer((req, res) => {
     res.end(variableValue);
 });
 
-retrieveServer.listen(config.get('read-port'), () => {
+retrieveServer.listen(8085, () => {
     console.log('Retrieve server running at http://' + hostname + ':8085/');
 });
 
@@ -58,6 +57,6 @@ const htmlServer = http.createServer((req, res) => {
     res.end(htmlContent);
 });
 
-htmlServer.listen(config.get('webclient-port'), () => {
+htmlServer.listen(3000, () => {
     console.log('Server running at http://' + hostname + ':3000/');
 });

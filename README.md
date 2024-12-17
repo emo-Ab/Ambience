@@ -7,7 +7,7 @@ possible to implement complex audio processing algorithms such as speech process
 
 The target of the project is towards home automation/office automation, in environment where needs of sound sensitive people
 may be addresses. Silent zones in libraries, offices, train carriages etc. could be locations where a device could be implemented.
-The versatility of Raspberry Pi enables easy customization of the SW to cater to individual applications and environment.
+The versitlity of Raspberry Pi enables easy customization of the SW to cater to individual applications and environment.
 
 Hardware
 --------
@@ -15,24 +15,22 @@ Hardware
 2. ReSpeaker 4-mic array (https://wiki.seeedstudio.com/ReSpeaker_4_Mic_Array_for_Raspberry_Pi/)
 
 
-Repository
-----------
-1. Ambisense (git@github.com:emo-Ab/Ambinent_House.git)
-
-Software Dependency (Device Node)
-----------------------
-1. Raspberry Pi Os with bullseye Kernel (https://www.raspberrypi.org/downloads/raspbian/) (2021-10-30-raspios-bullseye-arm64)
+Software
+--------
+1. Raspberry Pi Os with bullseuye Kernel (https://www.raspberrypi.org/downloads/raspbian/) (2021-10-30-raspios-bullseye-arm64)
 2. Device Drivers (https://wiki.seeedstudio.com/ReSpeaker_4_Mic_Array_for_Raspberry_Pi/)
 3. Python (3.10.12)
+4. Ambisense (git@github.com:emo-Ab/Ambinent_House.git)
 
-Installation (Device Node)
+
+Installation
 ------------
 1. Install the Raspberry Pi OS on Pi.
 2. Follow instructions to connect and install the mic array.
 3. Run test application to verify mic array is working.
 4. Clone the Ambisense project.
-5. Update the settings.json as per connected recording device and web server.
-5. Run main.py.
+5. Run the application.
+
 
 Calibration
 -----------
@@ -40,25 +38,9 @@ The following functionality may be calibrated by modifying values in the softwar
 1. The sensitivity of noise detection
 2. Intensity of LED
 
-Software Dependency (Web Server)
----------------------
-1. Node.js
-
-Installation (Web Server)
----------------------
-1. Copy directory server in Ambisense repository.
-2. Set the ip address of the server.
-3. Update the web address in the html page.
-3. Run webserver_node.js
-
-Simulation and Testing
-----------------------
-1. The monitor software may be run on PC.
-2. Modify the settings.json.
-
 Edge Computing
 --------------
-Machine learning algorithms may be trained on PC and ported to Raspberry Pi.
+Machine learning algorthims may be trained on PC and ported to Raspberry Pi.
 Possible applications include voice detection, bark detection, speech detection,
 voice diametrization.
 
