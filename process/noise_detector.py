@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 
-
 class NoiseDetector:
     def __init__(self, thres_freq=20, thres_ampl=145, thres_dB=15):
         self.threshold_freq=thres_freq
@@ -10,7 +9,7 @@ class NoiseDetector:
         self.threshold_dB = thres_dB
         self.noise_history = []
 
-    def calculate_noiselevel(self, frame):
+    def calculate_noise_level(self, frame):
         rms = np.sqrt(np.mean(frame))
         noise_level= 20 * np.log10(rms)
         return noise_level
@@ -19,7 +18,7 @@ class NoiseDetector:
         return self.noise_history
     
     def detect_noise(self, freq, frame):
-        noise_level = self.calculate_noiselevel(frame)
+        noise_level = self.calculate_noise_level(frame)
         #print(noise_level)
         if noise_level>self.threshold_dB:
             count_noise="noise detected"
