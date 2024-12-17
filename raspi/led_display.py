@@ -7,7 +7,6 @@ import pyaudio
 import wave
 import numpy as np
 import audioop
-from update_noise_detected import NoiseUpdater
 
 class LedDisplay:
     PIXELS_N = 12
@@ -17,7 +16,6 @@ class LedDisplay:
         self.power = LED(5)
         self.power.on()
         self.fill_level = 0
-        self.updater = NoiseUpdater('http://192.168.0.31:8080/')
 
 
     def show(self, data):
@@ -25,16 +23,18 @@ class LedDisplay:
             self.dev.set_pixel(i, int(data[4*i + 1]), int(data[4*i + 2]), int(data[4*i + 3]))
         self.dev.show()
 
+    def shutdown(self):
+        self.dev.cleanup()
 
-    def calibrate(self):
+    def tune(self):
         #maintain fader levels between 10 - 90
         if self.fill_level>90:
             self.fill_level=90
         elif self.fill_level<=10:
             self.fill_level=10
 
-    def fadevalue(self):
-        #determine rise/lower level for led brightness
+    def fader_step(self):
+        #determine step level for led fader
         if self.fill_level > 75:
             return 2
         elif self.fill_level > 50:
@@ -45,23 +45,16 @@ class LedDisplay:
             return 5
 
     def fader(self, val):
-
-        self.calibrate()
+        # LED fader
+        self.tune()
 
         if val == "noise detected":
-            self.fill_level+=self.fadevalue()
+            self.fill_level+=self.fader_step()
         elif val == "silence":
-            self.fill_level-=self.fadevalue()
+            self.fill_level-=self.fader_step()
 
         red_led = self.fill_level
         green_led = 100 - self.fill_level
-
-
-	    # Update the noise levels to the web server
-        self.updater.calculate_latestnoise(red_led, green_led)
-
-        #print(val)
-        #print(red_led)
 
         for i in range(self.PIXELS_N):
             self.dev.set_pixel(i, red_led,green_led, 0, 50)

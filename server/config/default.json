@@ -1,0 +1,8 @@
+{
+    "webserver-address": "192.168.0.52",
+    "update-port": "8080",
+    "read-port": "8085",
+    "webclient-port":"3000",
+    "rec-device": "PC",
+    "noise-threshold": 10
+}

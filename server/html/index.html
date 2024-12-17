@@ -16,7 +16,7 @@
     <div id="colorBox"></div>
     <script>
         function updateColor() {
-            fetch('http://192.168.0.31:8085/')
+            fetch('http://192.168.0.52:8085/')
                 .then(response => response.text())
                 .then(data => {
                     const [r, g, b] = data.split(',').map(Number);
