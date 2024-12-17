@@ -6,19 +6,29 @@ const config = require('config');
 
 const hostname = config.get('webserver-address')
 let variableValue = '10,10,10';
+let speechText = 'nothing';
+let deviceName = '';
 
 // Read the HTML file
-const htmlFilePath = path.join(__dirname, '/html/index.html');
+const htmlFilePath = path.join(__dirname, '/html/webui.html');
 const htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
 
 // Server to update variable value on port 8080
 const updateServer = http.createServer((req, res) => {
     const queryObject = url.parse(req.url, true).query;
-    if (queryObject.value) {
-        variableValue = queryObject.value;
-        console.log('Update requested');
+
+    if (queryObject.device) {
+        deviceName = queryObject.device;
     }
 
+    if (queryObject.value) {
+        variableValue = queryObject.value;
+    }
+
+    if (queryObject.text) {
+        speechText = queryObject.text;
+    }
+    
     res.writeHead(200, {
         'Content-Type': 'text/plain',
         'Access-Control-Allow-Origin': '*'
@@ -32,8 +42,7 @@ updateServer.listen(config.get('update-port'), () => {
 });
 
 // Server to update variable value on port 8080
-const retrieveServer = http.createServer((req, res) => {
-    console.log('Value requested');
+const retrieveRGB = http.createServer((req, res) => {
     res.writeHead(200, {
         'Content-Type': 'text/plain',
         'Access-Control-Allow-Origin': '*'
@@ -42,8 +51,36 @@ const retrieveServer = http.createServer((req, res) => {
     res.end(variableValue);
 });
 
-retrieveServer.listen(config.get('read-port'), () => {
+retrieveRGB.listen(config.get('rgb-port'), () => {
     console.log('Retrieve server running at http://' + hostname + ':8085/');
+});
+
+// Server to update variable value on port 8080
+const retrieveSpeech = http.createServer((req, res) => {
+    res.writeHead(200, {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*'
+    });
+
+    res.end(speechText);
+});
+
+retrieveSpeech.listen(config.get('speech-port'), () => {
+    console.log('Retrieve server running at http://' + hostname + ':8086/');
+});
+
+// Server to update variable value on port 8080
+const retrieveDevice = http.createServer((req, res) => {
+    res.writeHead(200, {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*'
+    });
+
+    res.end(deviceName);
+});
+
+retrieveDevice.listen(config.get('device-port'), () => {
+    console.log('Retrieve server running at http://' + hostname + ':8087/');
 });
 
 // Server to display html page on Port 3000

@@ -7,6 +7,8 @@ class SwConfig:
         self.server_ip = "http://" + config['webserver-address'] + ":" + config['update-port'] + "/"
         self.device = config['rec-device']
         self.threshold = config['noise-threshold']
+        self.debug = config['enable-debug']
+        self.name = config['device-name']
 
     def load_json_config(self, file_path):
         with open(file_path, 'r') as config_file:

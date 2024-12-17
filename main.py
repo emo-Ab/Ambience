@@ -1,7 +1,7 @@
 from swc_config import SwConfig
 from audio.audio_recorder import AudioRecorder
 from process.noise_detector import NoiseDetector
-from web_ui.web_display import WebDisplay
+from web_ui.web_client import WebClient
 import time
 
 if __name__ == '__main__':
@@ -9,7 +9,7 @@ if __name__ == '__main__':
         # load configuration
         swc = SwConfig('config.json')
         noise_detector = NoiseDetector(thres_dB=swc.threshold)
-        web_client_node = WebDisplay(swc.server_ip)
+        web_client_node = WebClient(swc.server_ip, swc.name)
 
         recorder = AudioRecorder(swc.device)
         recorder.start_recording()
@@ -20,10 +20,13 @@ if __name__ == '__main__':
             recorder.record_frame()
             # Calculate spectrogram for latest frame 
             recorder.calculate_spectrogram()
+            # recognize speech 
+            speech = recorder.recognize_speech()
 
-            if swc.device == "PC":
+            if swc.debug == "true":
                 # Plot spectrogram on PC
                 recorder.plot_spectrogram()
+                print(speech)
 
             # Get noise level from latest spectrogram
             f, sx = recorder.get_spectrogram()
@@ -39,8 +42,11 @@ if __name__ == '__main__':
             # Show noise level in web client
             web_client_node.fader(noise_level)
 
+            if speech != "":  
+                # Show recognized speech in web client
+                web_client_node.update_speech(speech)
 
-            time.sleep(1)
+            time.sleep(0.5)
 
 
     except KeyboardInterrupt:

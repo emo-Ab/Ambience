@@ -2,12 +2,12 @@ import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
-
+import speech_recognition as sr
 
 class MicConfig:
     def __init__(self, device_name="PC"):        
         if device_name == "PC":
-            self.rate=16000
+            self.rate=48000
             self.channels=1
             self.device_index=1
             self.frames_per_buffer=1024
@@ -31,6 +31,8 @@ class AudioRecorder:
         self.freq = []
         self.times = []
         self.Sxx = []
+        self.recognizer = sr.Recognizer()        
+        self.speech_text = ""
 
     def initPlot(self):
         
@@ -53,7 +55,10 @@ class AudioRecorder:
     def record_frame(self):
         for index in range(0, int(self.rate / (self.frames_per_buffer * self.duration))):
             audio_sample = np.frombuffer(self.stream.read(self.frames_per_buffer, exception_on_overflow = False),dtype=np.int16)[1::self.channels]
-            self.frames.extend(audio_sample.flatten().tolist())        
+            self.frames.extend(audio_sample.flatten().tolist())
+            audio_data = audio_sample.tobytes()
+            audio = sr.AudioData(audio_data, self.rate, 2)
+       
 
     def get_spectrogram(self):
         f, sx = self.freq, self.Sxx
@@ -74,6 +79,21 @@ class AudioRecorder:
         self.fig.canvas.draw()
         plt.pause(0.2)  # pause a bit so that the plot updates
         return
+
+    def recognize_speech(self):
+        audio_data = np.array(self.frames, dtype=np.int16)
+        audio_data = audio_data.tobytes()
+        audio = sr.AudioData(audio_data, self.rate, 2)
+        try:
+            self.speech_text = self.recognizer.recognize_google(audio)
+            print(f"Recognized Text: {self.speech_text}")
+        except sr.UnknownValueError:
+            print("Google Web Speech API could not understand the audio")
+        except sr.RequestError as e:
+            print(f"Could not request results from Google Web Speech API; {e}")
+        # self.clear_cache()
+        return self.speech_text
+
 
     def clear_cache(self):
         self.frames = []

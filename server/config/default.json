@@ -1,8 +1,12 @@
 {
+    "device-name": "Office-Pc",
     "webserver-address": "192.168.0.52",
     "update-port": "8080",
-    "read-port": "8085",
+    "rgb-port": "8085",
+    "speech-port": "8086",
+    "device-port": "8087",
     "webclient-port":"3000",
     "rec-device": "PC",
-    "noise-threshold": 10
+    "noise-threshold": 10,
+    "enable-debug": false
 }
