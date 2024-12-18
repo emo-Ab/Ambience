@@ -1,4 +1,4 @@
-import apa102
+from raspi.apa102 import APA102
 import time
 import threading
 from scipy import signal
@@ -12,7 +12,7 @@ class LedDisplay:
     PIXELS_N = 12
 
     def __init__(self):
-        self.dev = apa102.APA102(num_led=self.PIXELS_N)
+        self.dev = APA102(num_led=self.PIXELS_N)
         self.power = LED(5)
         self.power.on()
         self.fill_level = 0
