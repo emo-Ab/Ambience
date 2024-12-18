@@ -4,27 +4,12 @@ class WebClient:
     def __init__(self, baseurl, dev_name):
         self.base_url = baseurl
         self.fade_level = 0
-        self.update_device_name(dev_name)
+        self.device_name = dev_name
 
-    # Function to update the rgb value on the Node.js server
-    def update_device_name(self, value):
-        url = f'{self.base_url}?device={value}'
+    # Function to update latest device data on the Node.js server
+    def update_device_data(self, rgb_value, text_value):
+        url = f'{self.base_url}?device={self.device_name}&rgb={rgb_value}&text={text_value}'
         response = requests.get(url)
-        
-    # Function to update the rgb value on the Node.js server
-    def update_variable(self, value):
-        url = f'{self.base_url}?value={value}'
-        response = requests.get(url)
-
-    # Function to update the recognized speech on the Node.js server
-    def update_speech(self, text):
-        url = f'{self.base_url}?text={text}'
-        response = requests.get(url)
-
-    def send_noise_level(self, red, green):
-        send_text = f"{red}, {green}, 0"
-        self.update_variable(send_text)
-
 
     def tune(self):
         #maintain fader levels between 10 - 90
@@ -44,22 +29,18 @@ class WebClient:
         else:
             return 15
 
-    def fader(self, val):
+    def fader(self, noise_level, speech_text):
         #UI fader
         self.tune()
 
-        if val == "noise detected":
+        if noise_level == "noise detected":
             self.fade_level+=self.fader_step()
-        elif val == "silence":
+        elif noise_level == "silence":
             self.fade_level-=self.fader_step()
 
         red_level = self.fade_level
         green_level = 100 - self.fade_level
 
 	    # Update the noise levels to the web server
-        self.send_noise_level(red_level, green_level)
-
-    def speech_to_text(self, text):
-        # Send recognized speech to web server
-        self.update_speech(text)
-        return
+        rgb_value = f"{red_level}, {green_level}, 0"
+        self.update_device_data(rgb_value, speech_text)
