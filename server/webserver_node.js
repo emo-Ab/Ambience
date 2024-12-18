@@ -29,22 +29,19 @@ const updateServer = http.createServer((req, res) => {
         // Append the data to a file named after the device
         fs.appendFile(`./data/${deviceName}.txt`, data, (err) => {
             if (err) {
-                console.error('Error writing to file', err);
-                response_val = 'NOT_OK';
+                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.end('Device cannot be stored');
             }
-        });     
+        });
+       
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('Device cannot be stored');     
     }
     else
     {
-        response_val = 'NOT_OK';
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Data Updated');
     }
-
-    res.writeHead(200, {
-        'Content-Type': 'text/plain',
-        'Access-Control-Allow-Origin': '*'
-    });
-
-    res.end(response_val);
 });
 
 updateServer.listen(config.get('update-port'), () => {
@@ -71,7 +68,6 @@ htmlServer.listen(config.get('webclient-port'), () => {
 // Server to retrieve the latest values for a device on port 8085
 const retrieveServer = http.createServer((req, res) => {
     const queryObject = url.parse(req.url, true).query;
-    let response_val = 'NOT_OK';
 
     if (queryObject.device) {
         const deviceName = queryObject.device;
