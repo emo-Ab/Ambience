@@ -1,8 +1,8 @@
 from swc_config import SwConfig
 # from raspi.led_display import LedDisplay
-from audio.audio_recorder import AudioRecorder
-from process.noise_detector import NoiseDetector
-from web_ui.web_client import WebClientHttps
+from audio_record.audio_recorder import AudioRecorder
+from noise_detection.noise_detector import NoiseDetector
+from web_client.web_client import WebClientHttps
 import time
 
 if __name__ == '__main__':
