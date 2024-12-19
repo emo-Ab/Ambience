@@ -66,8 +66,8 @@ htmlServer.listen(config.get('webclient-port'), () => {
 
 // Read SSL certificate and key
 const options = {
-    key: fs.readFileSync('./conf/server-private.pem'),
-    cert: fs.readFileSync('./conf/server.pem')
+    key: fs.readFileSync('./certificates/server-private.pem'),
+    cert: fs.readFileSync('./certificates/server.pem')
   };
 
 // Http Server to update the latest values for a device on port 8080
