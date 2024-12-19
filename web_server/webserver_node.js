@@ -7,7 +7,6 @@ const config = require('config');
 
 const hostname = config.get('webserver-address')
 
-
 // Http Server to retrieve the latest values for a device on port 8085
 const retrieveServer = http.createServer((req, res) => {
     const queryObject = url.parse(req.url, true).query;
@@ -43,27 +42,6 @@ retrieveServer.listen(config.get('data-port'), () => {
     console.log('Data Server is running on http://' + hostname + ':' + config.get('data-port') + '/');
 });
 
-// Read the HTML file
-const htmlFilePath = path.join(__dirname, '/html/webui.html');
-const htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
-
-// Server to display html page on Port 3000
-const htmlServer = http.createServer((req, res) => {
-
-    console.log('Page requested');
-    res.writeHead(200, {
-    'Content-Type': 'text/html',
-    'Access-Control-Allow-Origin': '*'
-    });
-
-    res.end(htmlContent);
-});
-
-htmlServer.listen(config.get('webclient-port'), () => {
-    console.log('Server running at http://' + hostname + ':3000/');
-});
-
-
 // Read SSL certificate and key
 const options = {
     key: fs.readFileSync('./certificates/server-private.pem'),
@@ -79,6 +57,17 @@ const updateServerHttps = https.createServer(options, (req, res) => {
         const deviceName = queryObject.device;
         const rgbValue = queryObject.rgb;
         const speechText = queryObject.text;
+
+        // Check if the file exists
+        if (!fs.existsSync(`./data/${deviceName}.txt`)) {
+            // Append the data to a file named after the device
+            fs.appendFile(`./data/devicelist.txt`, deviceName, (err) => {
+                if (err) {
+                    res.writeHead(400, { 'Content-Type': 'text/plain' });
+                    res.end('Device cannot be added');
+                }
+            });
+        }
 
         // Create a string with the values
         const data = `Device: ${deviceName}\nRGB: ${rgbValue}\nText: ${speechText}\n`;

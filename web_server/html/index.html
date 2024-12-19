@@ -3,64 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ambisense Web Services</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Device Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .data {
+            white-space: pre-wrap;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Ambisense Web Services</h1>
-    </header>
-    <main>
-        <div class="section">
-            <div class="section-title" id="deviceNameTitle">Device Name</div>
-        <div id="colorBox"></div>
-        <div class="input-container">
-            <input type="text" id="deviceName" name="deviceName" placeholder="Device Name">
-        </div>
-        <div class="input-container">
-            <input type="text" id="singleLineText" name="singleLineText" placeholder="Recognized text here">
-            </div>
-        </div>
-    </main>
-    <footer>
-        <p>&copy; 2024 Ambisense. All rights reserved.</p>
-    </footer>
+    <div class="container">
+        <h1>Device Data</h1>
+        <button onclick="fetchData()">Get Latest Data</button>
+        <div id="data" class="data"></div>
+    </div>
+
     <script>
-        function addDeviceName() {
-            fetch('http://192.168.0.52:8087/')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('deviceName').value = data;
-                    document.getElementById('deviceNameTitle').textContent = data;
-                })
-                .catch(error => console.error('Error:', error));
+        function fetchData() {
+            const deviceName = prompt("Enter the device name:");
+            if (deviceName) {
+                fetch(`http://localhost:8085?device=${deviceName}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        document.getElementById('data').textContent = data;
+                    })
+                    .catch(error => {
+                        document.getElementById('data').textContent = 'Error: ' + error.message;
+                    });
+            }
         }
-
-        function updateColor() {
-            fetch('http://192.168.0.52:8085/')
-                .then(response => response.text())
-                .then(data => {
-                    const [r, g, b] = data.split(',').map(Number);
-                    document.getElementById('colorBox').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        function updateText() {
-            fetch('http://192.168.0.52:8086/')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('singleLineText').value = data;
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        setInterval(updateColor, 5000);
-        setInterval(updateText, 5000);
-
-        addDeviceName();
-        updateColor();
-        updateText();
     </script>
 </body>
 </html>
