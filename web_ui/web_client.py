@@ -1,15 +1,26 @@
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.backends import default_backend
+import base64
 import requests
 
-class WebClient:
-    def __init__(self, baseurl, dev_name):
-        self.base_url = baseurl
+class WebClientHttps:
+    def __init__(self, baseurl_https, dev_name):
+        self.base_url_https = baseurl_https
         self.fade_level = 0
         self.device_name = dev_name
+        self.cert_path = './web_ui/certificates/client.pem'
+        self.key_path  = './web_ui/certificates/client-private.pem'
 
-    # Function to update latest device data on the Node.js server
+    # Function to updated latest device data to the server
     def update_device_data(self, rgb_value, text_value):
-        url = f'{self.base_url}?device={self.device_name}&rgb={rgb_value}&text={text_value}'
-        response = requests.get(url)
+        params = {"device": self.device_name, "rgb": rgb_value, "text": text_value}
+        url = self.base_url_https
+        # Currently the TLS handshake does not verify the server certificates
+        # InsecureRequestWarning: Unverified HTTPS request is being made to host is seen on console
+        # Shall be fixed in future pull requests
+        response = requests.get(url, params=params, cert=(self.cert_path, self.key_path), verify=False)
+        return response
 
     def tune(self):
         #maintain fader levels between 10 - 90
@@ -41,6 +52,6 @@ class WebClient:
         red_level = self.fade_level
         green_level = 100 - self.fade_level
 
-	    # Update the noise levels to the web server
+	    # Request device data update to the web server
         rgb_value = f"{red_level}, {green_level}, 0"
-        self.update_device_data(rgb_value, speech_text)
+        response = self.update_device_data(rgb_value, speech_text)

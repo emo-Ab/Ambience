@@ -1,7 +1,8 @@
 from swc_config import SwConfig
+# from raspi.led_display import LedDisplay
 from audio.audio_recorder import AudioRecorder
 from process.noise_detector import NoiseDetector
-from web_ui.web_client import WebClient
+from web_ui.web_client import WebClientHttps
 import time
 
 if __name__ == '__main__':
@@ -9,7 +10,10 @@ if __name__ == '__main__':
         # load configuration
         swc = SwConfig('config.json')
         noise_detector = NoiseDetector(thres_dB=swc.threshold)
-        web_client_node = WebClient(swc.server_ip, swc.name)
+        web_client_node = WebClientHttps(swc.base_url_https, swc.name)
+
+        #if swc.device == "RESPEAKER":
+        #    led_node = LedDisplay()
 
         recorder = AudioRecorder(swc.device)
         recorder.start_recording()
@@ -32,26 +36,16 @@ if __name__ == '__main__':
             f, sx = recorder.get_spectrogram()
             noise_level = noise_detector.detect_noise(f, sx)
 
-            if swc.device == "RESPEAKER":
-                from raspi.led_display import LedDisplay
-                led_node = LedDisplay()
-                # Show noise level in LED Display
-                led_node.fader(noise_level)
-
+            # Show noise level in LED Display
+            # led_node.fader(noise_level)
 
             # Show noise level in web client
-            web_client_node.fader(noise_level)
-
-            if speech != "":  
-                # Show recognized speech in web client
-                web_client_node.update_speech(speech)
-
+            web_client_node.fader(noise_level, speech)
             time.sleep(0.5)
 
 
     except KeyboardInterrupt:
         recorder.clear_cache()
         recorder.stop_recording()
-        if swc.device == "RESPEAKER":
-            led_node.shutdown()
-
+        # if swc.device == "RESPEAKER":
+        #    led_node.shutdown()

@@ -88,9 +88,11 @@ class AudioRecorder:
             self.speech_text = self.recognizer.recognize_google(audio)
             print(f"Recognized Text: {self.speech_text}")
         except sr.UnknownValueError:
-            print("Google Web Speech API could not understand the audio")
+            self.speech_text = ''
+            # print("Google Web Speech API could not understand the audio")
         except sr.RequestError as e:
-            print(f"Could not request results from Google Web Speech API; {e}")
+            self.speech_text = ''
+            # print(f"Could not request results from Google Web Speech API; {e}")
         # self.clear_cache()
         return self.speech_text
 
