@@ -1,7 +1,3 @@
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.backends import default_backend
-import base64
 import requests
 
 class WebClientHttps:
@@ -9,8 +5,8 @@ class WebClientHttps:
         self.base_url_https = baseurl_https
         self.fade_level = 0
         self.device_name = dev_name
-        self.cert_path = './web_ui/certificates/client.pem'
-        self.key_path  = './web_ui/certificates/client-private.pem'
+        self.cert_path = './web_client/certificates/client.pem'
+        self.key_path  = './web_client/certificates/client-private.pem'
 
     # Function to updated latest device data to the server
     def update_device_data(self, rgb_value, text_value):
