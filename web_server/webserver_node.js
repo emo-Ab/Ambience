@@ -13,26 +13,47 @@ const retrieveServer = http.createServer((req, res) => {
 
     if (queryObject.device) {
         const deviceName = queryObject.device;
-        const filePath = `./data/${deviceName}.txt`;
-
+        const devicePath = `./data/${deviceName}.txt`;
         // Check if the file exists
-        if (fs.existsSync(filePath)) {
+        if (fs.existsSync(devicePath)) {
             // Read the file contents
-            fs.readFile(filePath, 'utf8', (err, data) => {
+            fs.readFile(devicePath, 'utf8', (err, data) => {
                 if (err) {
                     console.error('Error reading file', err);
                     res.writeHead(500, { 'Content-Type': 'text/plain' });
                     res.end('Error reading file');
                 } else {
-                    res.writeHead(200, { 'Content-Type': 'text/plain' });
-                    res.end(data);
+                    // Split the file content into lines and get the first 3 lines
+                    const lines = data.split('\n').slice(-3).join('\n');
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain',
+                        'Access-Control-Allow-Origin' : '*'
+                    });
+                    res.end(lines);
                 }
             });
         } else {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('Device is not connected');
         }
-    } else {
+    } 
+    else if (req.url.startsWith('/alldevices')){
+        const devList = './data/devicelist.txt';
+        if (fs.existsSync(devList)) {
+            fs.readFile(devList, 'utf8', (err, data) => {
+                if (err) {
+                    console.error('Error reading file', err);
+                } else {
+                    res.writeHead(200, {
+                         'Content-Type': 'text/plain',
+                         'Access-Control-Allow-Origin' : '*'
+                    });
+                    res.end(data);
+                }
+            });
+        }        
+    }
+    else {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.end('Invalid Query');
     }
@@ -60,6 +81,7 @@ const updateServerHttps = https.createServer(options, (req, res) => {
 
         // Check if the file exists
         if (!fs.existsSync(`./data/${deviceName}.txt`)) {
+            const addDevice = deviceName + '\n';
             // Append the data to a file named after the device
             fs.appendFile(`./data/devicelist.txt`, deviceName, (err) => {
                 if (err) {

@@ -1,6 +1,6 @@
 {
-    "device-name": "Office-Pc",
-    "webserver-address": "192.168.0.31",
+    "device-name": "Office-Pc2",
+    "webserver-address": "192.168.0.52",
     "update-port-https": "8080",
     "data-port": "8085",
     "webclient-port":"3000",

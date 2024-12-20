@@ -3,53 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Data</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-        }
-        h1 {
-            text-align: center;
-        }
-        .data {
-            white-space: pre-wrap;
-            background-color: #f4f4f4;
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
-    </style>
+    <title>Ambisense Device Monitor</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header>
+        <h1>Ambisense Device Monitor</h1>
+    </header>
     <div class="container">
-        <h1>Device Data</h1>
-        <button onclick="fetchData()">Get Latest Data</button>
-        <div id="data" class="data"></div>
+        <div id="device-container" class="device-container"></div>
     </div>
 
-    <script>
-        function fetchData() {
-            const deviceName = prompt("Enter the device name:");
-            if (deviceName) {
-                fetch(`http://localhost:8085?device=${deviceName}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok ' + response.statusText);
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        document.getElementById('data').textContent = data;
-                    })
-                    .catch(error => {
-                        document.getElementById('data').textContent = 'Error: ' + error.message;
-                    });
-            }
-        }
-    </script>
+    <script src="html_script.js"></script>
 </body>
 </html>
