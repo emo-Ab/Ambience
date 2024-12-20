@@ -6,5 +6,7 @@
     "webclient-port":"3000",
     "rec-device": "PC",
     "noise-threshold": 10,
-    "enable-debug": false
+    "enable-debug": false,
+    "client-cert": "./web_client/certificates/client.pem",
+    "client-key": "./web_client/certificates/client-private.pem"
 }

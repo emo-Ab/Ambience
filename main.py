@@ -10,7 +10,7 @@ if __name__ == '__main__':
         # load configuration
         swc = SwConfig('config.json')
         noise_detector = NoiseDetector(thres_dB=swc.threshold)
-        web_client_node = WebClientHttps(swc.base_url_https, swc.name)
+        web_client_node = WebClientHttps(swc.base_url_https, swc.name, swc.client_cert, swc.client_private_key)
 
         #if swc.device == "RESPEAKER":
         #    led_node = LedDisplay()
